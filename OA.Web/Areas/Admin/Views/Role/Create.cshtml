@@ -1,0 +1,45 @@
+﻿@model OA.RolesDto.RoleDto
+
+
+<div class="box-body">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.DropDownList("rDepId", new SelectList(ViewData["depList"] as List<OA.DepartmentsDto.DepartmentDto>, "depId", "depName", Model == null ? 0 : Model.rDepId), new { @class = "form-control" })         
+            <input type="hidden" name="rId" id="rId" value="@(Model == null ? 0 : Model.rId) " />
+
+        </div>
+
+        <div class="form-group">
+            @Html.EditorFor(model => model.rName, new { htmlAttributes = new { @class = "form-control", placeholder = "名称" } })
+            @Html.ValidationMessageFor(model => model.rName, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+
+            @Html.EditorFor(model => model.rRemark, new { htmlAttributes = new { @class = "form-control", placeholder = "备注" } })
+            @Html.ValidationMessageFor(model => model.rRemark, "", new { @class = "text-danger" })
+            <input type="hidden" name="rAddTime" value="@DateTime.Now" />
+        </div>
+
+        <div class="form-group">
+            <div class="radio">
+                <label class="control-label col-md-2" for="rIsShow">是否展示</label>
+                <label>@Html.RadioButton("rIsShow", "false", false) 否</label>
+                <label style="margin-left:20px;">@Html.RadioButton("rIsShow", "true", true) 是</label>
+                @Html.ValidationMessageFor(model => model.rIsShow, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="radio">
+                <label class="control-label col-md-2" for="rIsDel">是否删除</label>
+                <label>@Html.RadioButton("rIsDel", "false", true) 否</label>
+                <label style="margin-left:20px;">@Html.RadioButton("rIsDel", "true", false) 是</label>
+                @Html.ValidationMessageFor(model => model.rIsDel, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,45 @@
+﻿@using OA.RolesDto;
+@model List<RoleDto>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="box-body">
+        <div class="box">
+            <!-- /.box-header -->
+            <div class="box-body table-responsive no-padding">
+                <table class="table table-hover table table-bordered">
+                    <thead>
+
+                        <tr>
+                            <th>
+                                <input type="checkbox" value="">ID
+                                <input type="hidden" name="urUId" value="@ViewBag.UserId " />
+                            </th>
+                            <th>部门名称</th>
+                            <th>角色名称</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @*@Html.CheckBoxFor(model => model[i].rIsDel)*@
+                                    <input type="checkbox" value="@Model[i].rId" name="urRId" checked="@Model[i].rIsDel">
+                                </td>
+                                <td>@Model[i].depName</td>
+                                <td>@Model[i].rName</td>
+
+                            </tr>
+
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+    </div>
+}

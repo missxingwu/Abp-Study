@@ -1,0 +1,91 @@
+﻿@*@using OA.PermissionsDto;
+    @model List<PermissionDto>*@
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="box-body">
+        <div class="box">
+            <!-- /.box-header -->
+            <div class="box-body table-responsive no-padding">
+                <table class="table table-hover table table-bordered">
+                    <thead>
+
+                        <tr>
+                            <th>
+                                <input type="checkbox" value="">ID
+                                <input type="hidden" name="rpRId" value="@ViewBag.roleId " />
+                            </th>
+                            <th>权限名称</th>
+                            <th><input type="checkbox" /></th>
+                            <th>浏览</th>
+                            <th>新增</th>
+                            <th>编辑</th>
+                            <th>删除</th>
+                            <th>设置按钮</th>
+                            <th>设置权限</th>
+                            <th>修改密码</th>
+                            <th>删除全部</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="rpPId" value="@Model[i].pbPId" name="list[@i].pbPId" checked="@(Model[i].pbIsDel)">
+                                    <input type="hidden" value="@DateTime.Now" name="list[@i].pbAddTime">
+                                    <input type="hidden" name="list[@i].UorRId" value="@ViewBag.roleId " />
+                                    <input type="hidden" name="list[@i].pbUorRStatr" value="0" />
+                                </td>
+                                <td>@Model[i].pbPName</td>
+                                <td><input type="checkbox" class="all" /></td>
+                                <td><input type="checkbox" checked="@Model[i].pbIndex" name="list[@i].pbIndex" value="true" /></td>
+                                <td><input type="checkbox" checked="@Model[i].pbCreate" name="list[@i].pbCreate" value="true" /></td>
+                                <td><input type="checkbox" checked="@Model[i].pbEdit" name="list[@i].pbEdit" value="true" /></td>
+                                <td><input type="checkbox" checked="@Model[i].pbDelete" name="list[@i].pbDelete" value="true" /></td>
+                                <td><input type="checkbox" checked="@Model[i].pbSetButton" name="list[@i].pbSetButton" value="true" /></td>
+                                <td><input type="checkbox" checked="@Model[i].pbSetPermission" name="list[@i].pbSetPermission" value="true" /></td>
+                                <td><input type="checkbox" checked="@Model[i].pbChangePwd" name="list[@i].pbChangePwd" value="true" /></td>
+                                <td><input type="checkbox" checked="@Model[i].pbDeleteAll" name="list[@i].pbDeleteAll" value="true" /></td>
+                            </tr>
+
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    var index = 0;
+    $(document).on('click', 'input[type="checkbox"]', function () {
+
+        if ($(this).is(":checked")) {
+            var rppid = $(this).parent().parent().children(':first-child').find('input[type="checkbox"]');
+            $(rppid).prop('checked', true);
+            var _ckname = $(this).attr("class");
+            if (_ckname == "all") {
+                var rppid = $(this).parent().parent().children().find('input[type="checkbox"]');
+                $(rppid).prop('checked', true);
+
+            }
+        }
+        else {
+            var _ckname = $(this).attr("class");
+            if (_ckname == "rpPId") {
+                var rppid = $(this).parent().parent().children().find('input[type="checkbox"]');
+                $(rppid).prop('checked', false);
+            }
+            if (_ckname == "all") {
+                var rppid = $(this).parent().parent().children().find('input[type="checkbox"]');
+                $(rppid).prop('checked', false);
+                var rppid = $(this).parent().parent().children(':first-child').find('input[type="checkbox"]');
+                $(rppid).prop('checked', true);
+            }
+        }
+
+    });
+</script>

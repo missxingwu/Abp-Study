@@ -1,0 +1,226 @@
+﻿@using OA.UserDto;
+@using OA.PermissionsDto;
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var btn = ViewData["basebutton"] as PermissionButtonDto;
+}
+
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">员工管理</h3>
+
+        <div class="box-tools">
+            @if (btn.pbCreate)
+            {
+                <button id="add-new" type="button" class="btn btn-default pull-left" style="margin-right:5px;"><i class="fa fa-plus"></i> 新增员工</button>
+            }
+            <div class="input-group input-group-sm" style="width: 150px;">
+                <input type="text" name="table_search" class="form-control pull-right" placeholder="Search">
+                <div class="input-group-btn">
+                    <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="box-body table-responsive no-padding">
+        <table class="table table-hover table table-bordered">
+            <thead>
+                <tr>
+                    <th width="5%">序号</th>
+                    <th width="12%" class="th-hover">用户名</th>
+                    <th width="12%" class="th-hover">电子邮件</th>
+                    <th width="10%">姓名</th>
+                    <th width="7%">性别</th>
+                    <th width="10%" class="th-hover">是否职</th>
+                    <th width="14%" class="th-hover">注册时间</th>
+                    <th width="16%">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ViewData["list"] as List<UserInfoDto>)
+                {
+                    <tr>
+                        <td width="5%">@item.uId</td>
+                        <td width="12%" class="th-hover">@item.uLoginName</td>
+                        <td width="12%" class="th-hover">@item.uEmail</td>
+                        <td width="10%">@item.uName</td>
+                        <td width="7%">@(item.uGender.Value ? "女" : "男")</td>
+                        <td width="10%" class="th-hover">@item.uIsDel.Value</td>
+                        <td width="14%" class="th-hover">@item.uAddTime</td>
+                        <td>
+                            <div class="tools">
+                                @if (btn.pbSetPermission)
+                                {
+                                    <a href="javaScript:(0)" onclick="AddRole(@item.uId)" title="分配角色"><i class="fa fa-plus"></i></a>
+                                }
+                                @if (btn.pbEdit)
+                                {
+                                    <a href="javaScript:(0)" onclick="Edit(@item.uId)" title="编辑"><i class="fa fa-edit"></i></a>
+                                }
+                                @if (btn.pbDelete)
+                                {
+                                    <a href="javaScript:(0)" onclick="Del(@item.uId)" title="删除"><i class="fa fa-trash-o"></i></a>
+                                }
+
+                                <a href="javaScript:(0)" onclick="AddPer(@item.uId)" title="特殊权限"><i class="fa fa-cog"></i></a>
+
+                            </div>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+@*<script src="~/Scripts/jquery-2.1.4.min.js"></script>*@
+<script type="text/javascript">
+    $(function () {
+        $("#add-new").click(function () {
+            var index = -1;
+            $.get("@Url.Action("Create")", null, function (data) {
+                if (data.Statu != "err") {
+                    //页面层
+                    index = layer.open({
+                        type: 1,
+                        title: "编辑",
+                        skin: 'layui-layer-rim', //加上边框
+                        area: ['600px', '500px'], //宽高
+                        content: data,
+                        btn: ['提交', '取消'] //只是为了演示
+                        , yes: function () {
+                            var data = $("form").serialize();
+                            $.post("@Url.Action("Create")", data, function (obj) {
+                                debugger;
+                                if (obj.result.statu == "ok") {
+                                    layer.msg('保存成功！');
+                                    layer.close(index);
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    layer.msg(data.Msg);
+                }
+
+                //$("#add-new-page").html(data);
+            });
+        });
+    });
+    function Del(id) {
+        layer.confirm('是否删除', { icon: 3, title: '提示' }, function (index) {
+            $.get("@Url.Action("Delete")", { Id: id }, function (data) {
+                if (data.result.statu == "ok") {
+                    layer.msg('删除成功！', { time: 500 }, function () {
+                        location.reload();
+                    });
+                    layer.close(index);
+                } else {
+                    layer.msg(data.Msg);
+                }
+            });
+        });
+
+    }
+    var index = -1;
+    function Edit(id) {
+        debugger;
+        //  var index = -1;
+        $.get("@Url.Action("Edit")", { id: id }, function (data) {
+            if (data.Statu != "err") {
+                //页面层
+                index = layer.open({
+                    type: 1,
+                    title: "修改部门",
+                    skin: 'layui-layer-rim', //加上边框
+                    area: ['600px', '400px'], //宽高
+                    content: data,
+                    btn: ['提交', '取消'] //只是为了演示
+                    , yes: function () {
+                        var data = $("form").serialize();
+                        $.post("@Url.Action("Edit")", data, function (obj) {
+                            debugger;
+                            if (obj.result.statu == "ok") {
+                                // layer.close(index);
+                                layer.msg('保存成功！', { time: 500 }, function () {
+                                    location.reload();
+                                });
+
+                            } else {
+                                layer.msg('保存失败，请检查数据！');
+                            }
+                        });
+                    }
+                });
+            } else {
+                layer.msg(data.Msg);
+            }
+        });
+    }
+    function AddRole(id) {
+        $.get("@Url.Action("RoleList")", { Id: id }, function (data) {
+            if (data.Statu != "err") {
+                //页面层
+                index = layer.open({
+                    type: 1,
+                    title: "分配角色",
+                    skin: 'layui-layer-rim', //加上边框
+                    area: ['600px', '300px'], //宽高
+                    content: data,
+                    btn: ['编辑', '取消'], //只是为了演示
+                    yes: function () {
+                        debugger;
+                        var data = $("form").serialize();
+
+                        $.post("@Url.Action("RoleList")", data, function (obj) {
+                            if (obj.result.statu == "ok") {
+                                layer.msg('保存成功！');
+                                layer.close(index);
+
+                            } else {
+                                layer.msg('保存失败，请检查数据！');
+                            }
+                        });
+                    }
+                });
+            } else {
+                layer.msg(data.Msg);
+            }
+
+        });
+    }
+
+    function AddPer(id) {
+        $.get("@Url.Action("UserPer")", { Id: id }, function (data) {
+            if (data.Statu != "err") {
+                //页面层
+                index = layer.open({
+                    type: 1,
+                    title: "分配角色",
+                    skin: 'layui-layer-rim', //加上边框
+                    area: ['800px', '400px'], //宽高
+                    content: data,
+                    btn: ['编辑', '取消'], //只是为了演示
+                    yes: function () {
+                        debugger;
+                        var data = $("form").serialize();
+
+                        $.post("@Url.Action("UserPer")", data, function (obj) {
+                            if (obj.result.statu == "ok") {
+                                layer.msg('保存成功！');
+                                layer.close(index);
+
+                            } else {
+                                layer.msg('保存失败，请检查数据！');
+                            }
+                        });
+                    }
+                });
+            } else {
+                layer.msg(data.Msg);
+            }
+
+        });
+    }
+</script>

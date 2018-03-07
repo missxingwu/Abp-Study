@@ -1,0 +1,46 @@
+﻿@model OA.DepartmentsDto.DepartmentDto
+
+<div class="box-body">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+
+            @Html.DropDownList("depPid", new SelectList(ViewData["depList"] as List<OA.DepartmentsDto.DepartmentDto>, "depId", "depName", Model == null ? 0 : Model.depPid), new { @class = "form-control" })
+            @*@Html.EditorFor(model => model.depPid, new { htmlAttributes = new { @class = "form-control", placeholder = "depPid" } })*@
+            @Html.ValidationMessageFor(model => model.depPid, "", new { @class = "text-danger" })
+
+        </div>
+
+        <div class="form-group">
+
+            @Html.EditorFor(model => model.depName, new { htmlAttributes = new { @class = "form-control", placeholder = "depName" } })
+            @Html.ValidationMessageFor(model => model.depName, "", new { @class = "text-danger" })
+            <input data-val="true" id="depAddTime" name="depAddTime" type="hidden" value="@DateTime.Now">
+            @*<input type="hidden" name="depId" id="depId" value="@(Model == null ? 0 : Model.depId)" />*@
+        </div>
+
+        <div class="form-group">
+            @Html.EditorFor(model => model.depRemark, new { htmlAttributes = new { @class = "form-control", placeholder = "depRemark" } })
+            @Html.ValidationMessageFor(model => model.depRemark, "", new { @class = "text-danger" })
+
+        </div>
+        <div class="form-group">
+            <div class="radio">
+                <label class="control-label col-md-2" for="rIsDel">是否删除</label>
+                <label>@Html.RadioButton("depIsDel", "false", true) 否</label>
+                <label style="margin-left:20px;">@Html.RadioButton("depIsDel", "true", false) 是</label>
+                @Html.ValidationMessageFor(model => model.depIsDel, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        if (Model != null)
+        {
+            @Html.HiddenFor(model => model.depId);
+        }
+
+    }
+
+</div>
